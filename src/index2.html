@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socket.IO Chat</title>
+  <style>
+    body {
+      margin: 0;
+      padding-bottom: 3rem;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    #messages-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 20%;
+      background-color: #f0f0f0;
+      overflow-y: auto;
+      padding: 1rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    
+  </style>
+</head>
+<body>
+  <div id="messages-container">
+    <ul id="messages"></ul>
+  </div>
+  <button id="sendButton">Send Message</button>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const messages = document.getElementById('messages');
+    const sendButton = document.getElementById('sendButton');
+
+    sendButton.addEventListener('click', () => {
+      const msg = prompt('Enter your message:');
+      if (msg) {
+        socket.emit('chat message', msg);
+      }
+    });
+
+    socket.on('chat message', (msg) => {
+      const item = document.createElement('li');
+      item.textContent = msg;
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    // Handle reply messages
+    socket.on('reply message', (msg) => {
+      const item = document.createElement('li');
+      item.textContent = msg;
+      item.style.color = 'green'; // Change the color for reply messages
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+  </script>
+</body>
+</html>
